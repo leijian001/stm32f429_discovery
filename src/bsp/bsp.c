@@ -1,14 +1,18 @@
 #include <stm32f4xx.h>
 #include <bsp.h>
+#include "stm32f429i_discovery_sdram.h"
 
 #include <mm/raw_tlsf.h>
 
+#include <raw_api.h>
 
-static unsigned int port_memory_pool[PORT_MEMORY_SIZE / sizeof(unsigned int)];
+static unsigned int port_memory_pool[PORT_MEMORY_SIZE / sizeof(unsigned int)] AT_SDRAM;
 
 void port_memory_init(unsigned char prio)
 {
-	init_memory_pool(PORT_MEMORY_SIZE, port_memory_pool);
+	RAW_U32 ret;
+	ret = init_memory_pool(PORT_MEMORY_SIZE, port_memory_pool);
+	RAW_ASSERT((RAW_U32)-1 != ret);
 }
 
 void *port_malloc(unsigned int size)
@@ -35,5 +39,5 @@ void bsp_init(void)
 							RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
 							RCC_AHB1Periph_GPIOG, ENABLE);
 	
-	
+	SDRAM_Init();
 }

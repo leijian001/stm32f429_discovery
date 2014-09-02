@@ -425,6 +425,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\app\sys_led.c</FilePath>
             </File>
+            <File>
+              <FileName>lua_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\app\lua_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -482,6 +487,11 @@
               <FileName>stm32f4xx_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\stm32f429\driver\src\stm32f4xx_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_fmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\stm32f429\driver\src\stm32f4xx_fmc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -707,6 +717,16 @@
               <FileName>bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\bsp\bsp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f429i_discovery_sdram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\bsp\stm32f429i_discovery_sdram.c</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\bsp\retarget.c</FilePath>
             </File>
           </Files>
         </Group>
