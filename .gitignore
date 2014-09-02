@@ -1,0 +1,8 @@
+*.o
+*.d
+*.crf
+*.html
+!*.c
+!*.h
+!*.sct
+./prj/obj
