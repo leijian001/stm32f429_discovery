@@ -12,6 +12,8 @@ static PORT_STACK 				lua_task_stk[LUA_TASK_STK_SIZE];
 static RAW_TASK_OBJ 			lua_task_obj;
 /******************************************************************************/
 
+#include "stm32f429i_discovery_lcd.h"
+
 static void lua_task(void *pdat)
 {
 	(void)pdat;
@@ -21,6 +23,9 @@ static void lua_task(void *pdat)
 	
 	for(;;)
 	{
+		LCD_Clear(0xFFFF);
+		LCD_SetLayer(LCD_FOREGROUND_LAYER);
+		LCD_DrawCircle(100, 100, 50);
 		raw_task_suspend(raw_task_identify());
 	}
 }

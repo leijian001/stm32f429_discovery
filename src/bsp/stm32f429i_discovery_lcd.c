@@ -27,8 +27,9 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "bsp.h"
 #include "stm32f429i_discovery_lcd.h"
-#include "../Common/fonts.c"
+#include "fonts.c"
 
 
 /** @addtogroup Utilities
@@ -75,13 +76,16 @@
   
 /** @defgroup STM32F429I_DISCOVERY_LCD_Private_Variables
   * @{
-  */ 
+  */
+
+static unsigned int __LCD_FRAME_BUFFER[(2 * BUFFER_OFFSET) / sizeof(unsigned int)] AT_SDRAM;
+
 static sFONT *LCD_Currentfonts;
 /* Global variables to set the written text color */
 static uint16_t CurrentTextColor   = 0x0000;
 static uint16_t CurrentBackColor   = 0xFFFF;
 /* Default LCD configuration with LCD Layer 1 */
-static uint32_t CurrentFrameBuffer = LCD_FRAME_BUFFER;
+static uint32_t CurrentFrameBuffer = 0;//LCD_FRAME_BUFFER;
 static uint32_t CurrentLayer = LCD_BACKGROUND_LAYER;
 /**
   * @}
@@ -231,6 +235,9 @@ void LCD_DeInit(void)
 void LCD_Init(void)
 { 
   LTDC_InitTypeDef       LTDC_InitStruct;
+
+  //Ïû³ý 1296 warning	
+  CurrentFrameBuffer = LCD_FRAME_BUFFER;
   
   /* Configure the LCD Control pins ------------------------------------------*/
   LCD_CtrlLinesConfig();
@@ -253,7 +260,7 @@ void LCD_Init(void)
   LCD_AF_GPIOConfig();  
   
   /* Configure the FMC Parallel interface : SDRAM is used as Frame Buffer for LCD */
-  SDRAM_Init();
+//  SDRAM_Init();
   
   /* LTDC Configuration *********************************************************/  
   /* Polarity configuration */

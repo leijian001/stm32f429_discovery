@@ -38,7 +38,7 @@
 #include "stm32f4xx.h"
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_sdram.h"
-#include "../Common/fonts.h"
+#include "fonts.h"
 
 /** @addtogroup Utilities
   * @{
@@ -77,7 +77,8 @@ typedef struct
 #define  LCD_PIXEL_WIDTH    ((uint16_t)240)
 #define  LCD_PIXEL_HEIGHT   ((uint16_t)320)
 
-#define LCD_FRAME_BUFFER       ((uint32_t)0xD0000000)
+//#define LCD_FRAME_BUFFER       ((uint32_t)0xD0000000)
+#define LCD_FRAME_BUFFER       ((uint32_t)__LCD_FRAME_BUFFER)
 #define BUFFER_OFFSET          ((uint32_t)0x50000) 
 /**
  * @brief Uncomment the line below if you want to use user defined Delay function

@@ -493,6 +493,26 @@
               <FileType>1</FileType>
               <FilePath>..\src\stm32f429\driver\src\stm32f4xx_fmc.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\stm32f429\driver\src\stm32f4xx_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_ltdc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\stm32f429\driver\src\stm32f4xx_ltdc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\stm32f429\driver\src\stm32f4xx_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_dma2d.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\stm32f429\driver\src\stm32f4xx_dma2d.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -727,6 +747,11 @@
               <FileName>retarget.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\bsp\retarget.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f429i_discovery_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\bsp\stm32f429i_discovery_lcd.c</FilePath>
             </File>
           </Files>
         </Group>

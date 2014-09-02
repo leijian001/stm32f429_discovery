@@ -1,6 +1,7 @@
 #include <stm32f4xx.h>
 #include <bsp.h>
 #include "stm32f429i_discovery_sdram.h"
+#include "stm32f429i_discovery_lcd.h"
 
 #include <mm/raw_tlsf.h>
 
@@ -40,4 +41,8 @@ void bsp_init(void)
 							RCC_AHB1Periph_GPIOG, ENABLE);
 	
 	SDRAM_Init();
+	LCD_Init();
+	LCD_LayerInit();
+	/* Enable The LCD */
+	LTDC_Cmd(ENABLE);
 }
