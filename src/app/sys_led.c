@@ -1,4 +1,4 @@
-#include <stm32f4xx.h>
+ï»¿#include <stm32f4xx.h>
 
 #include <raw_api.h>
 #include <bsp.h>
@@ -37,11 +37,11 @@ static void sys_len_init(void)
 
 static void sys_led_on(unsigned char n)
 {
-	SYS_LED[n].port->BSRRL = SYS_LED[n].pin;	//ÖÃÎ»
+	SYS_LED[n].port->BSRRL = SYS_LED[n].pin;	//ç½®ä½
 }
 static void sys_led_off(unsigned char n)
 {
-	SYS_LED[n].port->BSRRH = SYS_LED[n].pin; //¸´Î»
+	SYS_LED[n].port->BSRRH = SYS_LED[n].pin; //å¤ä½
 }
 
 static void sys_led_task(void *pdat)
@@ -63,13 +63,13 @@ static void sys_led_task(void *pdat)
 
 void sys_led_init(RAW_U8 prio)
 {
-	raw_task_create(&sys_led_task_obj, 			/* ÈÎÎñ¿ØÖÆ¿éµØÖ· 	*/
-					(RAW_U8  *)"sys_led_task", 	/* ÈÎÎñÃû 			*/
-					(void *)0,					/* ÈÎÎñ²ÎÊı 		*/
-					prio, 						/* ÓÅÏÈ¼¶ 			*/
-					0,							/* Ê±¼äÆ¬ 			*/
-					sys_led_task_stk,			/* ÈÎÎñÕ»Ê×µØÖ· 	*/
-					SYS_LED_TASK_STK_SIZE ,		/* ÈÎÎñÕ»´óĞ¡ 		*/
-					sys_led_task,				/* ÈÎÎñÈë¿ÚµØÖ· 	*/
-					1);							/* ÊÇ·ñÁ¢¼´ÔËĞĞ 	*/
+	raw_task_create(&sys_led_task_obj, 			/* ä»»åŠ¡æ§åˆ¶å—åœ°å€ 	*/
+					(RAW_U8  *)"sys_led_task", 	/* ä»»åŠ¡å 			*/
+					(void *)0,					/* ä»»åŠ¡å‚æ•° 		*/
+					prio, 						/* ä¼˜å…ˆçº§ 			*/
+					0,							/* æ—¶é—´ç‰‡ 			*/
+					sys_led_task_stk,			/* ä»»åŠ¡æ ˆé¦–åœ°å€ 	*/
+					SYS_LED_TASK_STK_SIZE ,		/* ä»»åŠ¡æ ˆå¤§å° 		*/
+					sys_led_task,				/* ä»»åŠ¡å…¥å£åœ°å€ 	*/
+					1);							/* æ˜¯å¦ç«‹å³è¿è¡Œ 	*/
 }

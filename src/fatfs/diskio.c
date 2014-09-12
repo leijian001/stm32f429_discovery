@@ -101,7 +101,7 @@ DRESULT disk_read (
 
 	case USB :
 
-		res = RES_OK;
+		res = RES_PARERR;
 		break;
 	
 	default:
@@ -137,7 +137,7 @@ DRESULT disk_write (
 
 	case USB :
 
-		res = RES_OK;
+		res = RES_PARERR;
 		break;
 	
 	default:
@@ -172,7 +172,7 @@ DRESULT disk_ioctl (
 
 	case USB :
 
-		res = RES_OK;
+		res = RES_PARERR;
 		break;
 	
 	default:
@@ -184,11 +184,26 @@ DRESULT disk_ioctl (
 }
 #endif
 
+
+/*
+bit31:25
+    Year origin from the 1980 (0..127)
+bit24:21
+    Month (1..12)
+bit20:16
+    Day of the month(1..31)
+bit15:11
+    Hour (0..23)
+bit10:5
+    Minute (0..59)
+bit4:0
+    Second / 2 (0..29) 
+*/
+#define FATFS_TIME(Y,M,D,h,m,s) 	( (((Y)-1980)<<25) | ((M)<<21) | ((D)<<16) | ((h)<<11) | ((m)<<5) | ((s)>>1) )
 DWORD get_fattime (void)
 {
-
     /* Pack date and time into a DWORD variable */
-    return 0;
+    return FATFS_TIME(2000, 1, 1, 0, 0, 0);
 }
 
 #include "ff.h"
@@ -201,7 +216,7 @@ int ff_cre_syncobj (BYTE vol, _SYNC_t* sobj)	/* Create a sync object */
 	*sobj = port_malloc(sizeof(RAW_MUTEX));
 	if( ! *sobj )
 	{
-		return -1;
+		return 0;
 	}
 	
 	RAW_U16 ret;
@@ -209,7 +224,7 @@ int ff_cre_syncobj (BYTE vol, _SYNC_t* sobj)	/* Create a sync object */
 	ret = raw_mutex_create(*sobj, (RAW_U8 *)"fatfs_mutex", RAW_MUTEX_INHERIT_POLICY, 0);
 	RAW_ASSERT(RAW_SUCCESS == ret);
 	
-	return 0;
+	return 1;
 }
 int ff_del_syncobj (_SYNC_t sobj)				/* Delete a sync object */
 {
@@ -221,7 +236,7 @@ int ff_del_syncobj (_SYNC_t sobj)				/* Delete a sync object */
 	
 	port_free(sobj);
 	
-	return 0;
+	return 1;
 }
 int ff_req_grant (_SYNC_t sobj)				/* Lock sync object */
 {
@@ -229,14 +244,88 @@ int ff_req_grant (_SYNC_t sobj)				/* Lock sync object */
 	ret = raw_mutex_get(sobj, RAW_WAIT_FOREVER);
 	if(RAW_SUCCESS != ret && RAW_MUTEX_OWNER_NESTED != ret)
 	{
-		return -1;
+		return 0;
 	}
 	
-	return 0;
+	return 1;
 }
 void ff_rel_grant (_SYNC_t sobj)				/* Unlock sync object */
 {
 	RAW_U16 ret;
 	ret = raw_mutex_put(sobj);
 	RAW_ASSERT(RAW_SUCCESS == ret);
+}
+
+const char *fatfs_err2str(FRESULT fret)
+{
+	const char *serr;
+
+	switch( fret )
+	{
+	case FR_OK:
+		serr = "(0) Succeeded";
+		break;
+	case FR_DISK_ERR:
+		serr = "(1) A hard error occurred in the low level disk I/O layer";
+		break;
+	case FR_INT_ERR:
+		serr = "(2) Assertion failed";
+		break;
+	case FR_NOT_READY:
+		serr = "(3) The physical drive cannot work";
+		break;
+	case FR_NO_FILE:
+		serr = "(4) Could not find the file";
+		break;
+	case FR_NO_PATH:
+		serr = "(5) Could not find the path";
+		break;
+	case FR_INVALID_NAME:
+		serr = "(6) The path name format is invalid";
+		break;
+	case FR_DENIED:
+		serr = "(7) Access denied due to prohibited access or directory full";
+		break;
+	case FR_EXIST:
+		serr = "(8) Access denied due to prohibited access";
+		break;
+	case FR_INVALID_OBJECT:
+		serr = "(9) The file/directory object is invalid";
+		break;
+	case FR_WRITE_PROTECTED:
+		serr = "(10) The physical drive is write protected";
+		break;
+	case FR_INVALID_DRIVE:
+		serr = "(11) The logical drive number is invalid";
+		break;
+	case FR_NOT_ENABLED:
+		serr = "(12) The volume has no work area";
+		break;
+	case FR_NO_FILESYSTEM:
+		serr = "(13) There is no valid FAT volume";
+		break;
+	case FR_MKFS_ABORTED:
+		serr = "(14) The f_mkfs() aborted due to any parameter error";
+		break;
+	case FR_TIMEOUT:
+		serr = "(15) Could not get a grant to access the volume within defined period";
+		break;
+	case FR_LOCKED:
+		serr = "(16) The operation is rejected according to the file sharing policy";
+		break;
+	case FR_NOT_ENOUGH_CORE:
+		serr = "(17) LFN working buffer could not be allocated";
+		break;
+	case FR_TOO_MANY_OPEN_FILES:
+		serr = "(18) Number of open files > _FS_SHARE";
+		break;
+	case FR_INVALID_PARAMETER:
+		serr = "(19) Given parameter is invalid";
+		break;
+	default:
+		serr = "No error number";
+		break;
+	}
+
+	return serr;
 }

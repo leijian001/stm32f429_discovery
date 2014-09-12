@@ -105,6 +105,11 @@ static void LCD_AF_GPIOConfig(void);
 /**
   * @}
   */ 
+void *lcd_get_frame_base(void)
+{
+//	return __LCD_FRAME_BUFFER;
+	return (void *)CurrentFrameBuffer;
+}
 
 /** @defgroup STM32F429I_DISCOVERY_LCD_Private_Functions
   * @{

@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 
 #include <raw_api.h>
 
@@ -26,19 +26,26 @@ static void lua_task(void *pdat)
 		LCD_Clear(0xFFFF);
 		LCD_SetLayer(LCD_FOREGROUND_LAYER);
 		LCD_DrawCircle(100, 100, 50);
+		
+		unsigned short *const frame = lcd_get_frame_base();
+		for(int i=0; i<1000; i++)
+		{
+			frame[i] = LCD_COLOR_RED;
+		}
+		
 		raw_task_suspend(raw_task_identify());
 	}
 }
 
 void lua_task_init(unsigned char prio)
 {
-	raw_task_create(&lua_task_obj,			/* ÈÎÎñ¿ØÖÆ¿éµØÖ· 	*/
-					(RAW_U8  *)"lua_task",	/* ÈÎÎñÃû 			*/
-					(void *)0,				/* ÈÎÎñ²ÎÊý 		*/
-					prio,					/* ÓÅÏÈ¼¶ 			*/
-					0,						/* Ê±¼äÆ¬ 			*/
-					lua_task_stk,			/* ÈÎÎñÕ»Ê×µØÖ· 	*/
-					LUA_TASK_STK_SIZE ,		/* ÈÎÎñÕ»´óÐ¡ 		*/
-					lua_task,				/* ÈÎÎñÈë¿ÚµØÖ· 	*/
-					1);						/* ÊÇ·ñÁ¢¼´ÔËÐÐ 	*/
+	raw_task_create(&lua_task_obj,			/* ä»»åŠ¡æŽ§åˆ¶å—åœ°å€ 	*/
+					(RAW_U8  *)"lua_task",	/* ä»»åŠ¡å 			*/
+					(void *)0,				/* ä»»åŠ¡å‚æ•° 		*/
+					prio,					/* ä¼˜å…ˆçº§ 			*/
+					0,						/* æ—¶é—´ç‰‡ 			*/
+					lua_task_stk,			/* ä»»åŠ¡æ ˆé¦–åœ°å€ 	*/
+					LUA_TASK_STK_SIZE ,		/* ä»»åŠ¡æ ˆå¤§å° 		*/
+					lua_task,				/* ä»»åŠ¡å…¥å£åœ°å€ 	*/
+					1);						/* æ˜¯å¦ç«‹å³è¿è¡Œ 	*/
 }

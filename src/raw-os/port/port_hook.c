@@ -84,9 +84,10 @@ void task_create_hook(RAW_TASK_OBJ  *task_obj)
 
 RAW_VOID raw_idle_coroutine_hook()
 {
-
-	while (1);
-
+	for(;;)
+	{
+		
+	}
 }
 
 

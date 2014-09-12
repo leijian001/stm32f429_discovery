@@ -1,4 +1,4 @@
-#include <raw_api.h>
+ï»¿#include <raw_api.h>
 
 #include <bsp.h>
 
@@ -11,13 +11,13 @@ static RAW_TASK_OBJ 			sys_init_task_obj;
 typedef void (*init_func_t)(RAW_U8 prio);
 typedef struct init_task_t
 {
-	init_func_t init_task;	//ÈÎÎñ³õÊ¼»¯º¯Êı
-	RAW_U8 prio;			//ÈÎÎñÓÅÏÈ¼¶
+	init_func_t init_task;	//ä»»åŠ¡åˆå§‹åŒ–å‡½æ•°
+	RAW_U8 prio;			//ä»»åŠ¡ä¼˜å…ˆçº§
 }init_task_t;
 
 /******************************************************************************/
 
-void debug_uart_init(unsigned char prio);
+void debug_serial_init(unsigned char prio);
 RAW_TASK_OBJ *get_shell_task_obj(void);
 
 void sys_led_init(RAW_U8 prio);
@@ -27,7 +27,7 @@ void lua_task_init(unsigned char prio);
 
 static const init_task_t sys_init_arry[]  = 
 {
-	{debug_uart_init, 		CONFIG_RAW_PRIO_MAX - 10},		// ºËĞÄ°å´®¿Ú
+	{debug_serial_init, 	CONFIG_RAW_PRIO_MAX - 10},		// æ ¸å¿ƒæ¿ä¸²å£
 	{port_memory_init, 		CONFIG_RAW_PRIO_MAX     },
 	{sys_led_init, 			CONFIG_RAW_PRIO_MAX - 3 },
 	{lua_task_init, 		CONFIG_RAW_PRIO_MAX - 5 },
@@ -57,16 +57,16 @@ static void sys_init_task(void *pdat)
 	(void)pdat;
 	int i;
 	
-	raw_sys_tick_init();   //µÚÒ»¸öÈÎÎñÆô¶¯Ê±¿ªÆôÏµÍ³tick¶¨Ê±Æ÷
+	raw_sys_tick_init();   //ç¬¬ä¸€ä¸ªä»»åŠ¡å¯åŠ¨æ—¶å¼€å¯ç³»ç»Ÿtickå®šæ—¶å™¨
 	
-	// debug_uart ³õÊ¼»¯
+	// debug_uart åˆå§‹åŒ–
 	sys_init_arry[0].init_task( sys_init_arry[0].prio );
 	
 	raw_printf("\r\n-------------  raw-os  ----------------\r\n");
 	
 	RAW_ASSERT( 0 == memory_test() );
 	
-	// ÈÎÎñ³õÊ¼»¯, ´Ó1¿ªÊ¼£¬Ìø¹ıdebug_uart
+	// ä»»åŠ¡åˆå§‹åŒ–, ä»1å¼€å§‹ï¼Œè·³è¿‡debug_uart
 	for(i=1; i<ARRAY_SIZE(sys_init_arry); i++)
 	{
 		sys_init_arry[i].init_task( sys_init_arry[i].prio );
@@ -74,7 +74,7 @@ static void sys_init_task(void *pdat)
 
 	raw_printf("\r\n---------------------------------------\r\n");
 	
-	raw_task_resume(get_shell_task_obj()); 		// »½ĞÑshell_deamon
+	raw_task_resume(get_shell_task_obj()); 		// å”¤é†’shell_deamon
 	
 	for(;;)
 	{	
@@ -84,13 +84,13 @@ static void sys_init_task(void *pdat)
 
 void create_init_task(void)
 {
-	raw_task_create(&sys_init_task_obj,			/* ÈÎÎñ¿ØÖÆ¿éµØÖ· 	*/
-					(RAW_U8  *)"sys_init_task",	/* ÈÎÎñÃû 			*/
-					(void *)0,					/* ÈÎÎñ²ÎÊı 		*/
-					CONFIG_RAW_PRIO_MAX - 2,	/* ÓÅÏÈ¼¶ 			*/
-					0,							/* Ê±¼äÆ¬ 			*/
-					sys_init_task_stk,			/* ÈÎÎñÕ»Ê×µØÖ· 	*/
-					SYS_INIT_TASK_STK_SIZE ,	/* ÈÎÎñÕ»´óĞ¡ 		*/
-					sys_init_task,				/* ÈÎÎñÈë¿ÚµØÖ· 	*/
-					1);							/* ÊÇ·ñÁ¢¼´ÔËĞĞ 	*/
+	raw_task_create(&sys_init_task_obj,			/* ä»»åŠ¡æ§åˆ¶å—åœ°å€ 	*/
+					(RAW_U8  *)"sys_init_task",	/* ä»»åŠ¡å 			*/
+					(void *)0,					/* ä»»åŠ¡å‚æ•° 		*/
+					CONFIG_RAW_PRIO_MAX - 2,	/* ä¼˜å…ˆçº§ 			*/
+					0,							/* æ—¶é—´ç‰‡ 			*/
+					sys_init_task_stk,			/* ä»»åŠ¡æ ˆé¦–åœ°å€ 	*/
+					SYS_INIT_TASK_STK_SIZE ,	/* ä»»åŠ¡æ ˆå¤§å° 		*/
+					sys_init_task,				/* ä»»åŠ¡å…¥å£åœ°å€ 	*/
+					1);							/* æ˜¯å¦ç«‹å³è¿è¡Œ 	*/
 }

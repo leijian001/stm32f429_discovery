@@ -256,6 +256,8 @@ typedef struct
   * @}
   */ 
 
+void *lcd_get_frame_base(void);
+
 /** @defgroup STM32F429I_DISCOVERY_LCD_Exported_Functions
   * @{
   */ 

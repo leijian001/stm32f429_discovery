@@ -362,7 +362,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\src\app;..\src\cmsis\inc;..\src\raw-os\kernel\include;..\src\raw-os\port;..\src\stm32f429;..\src\stm32f429\driver\inc;..\src\raw-os\kernel\extension\include;..\src\bsp;..\src\lua;..\src\fatfs</IncludePath>
+              <IncludePath>..\src\app;..\src\cmsis\inc;..\src\raw-os\kernel\include;..\src\raw-os\port;..\src\stm32f429;..\src\stm32f429\driver\inc;..\src\raw-os\kernel\extension\include;..\src\bsp;..\src\lua;..\src\fatfs;..\src\lib</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -429,6 +429,26 @@
               <FileName>lua_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\app\lua_task.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>lib</GroupName>
+          <Files>
+            <File>
+              <FileName>lua_fatfs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lib\lua_fatfs.c</FilePath>
+            </File>
+            <File>
+              <FileName>serial_fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lib\serial_fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>ymodem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lib\ymodem.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -513,6 +533,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\stm32f429\driver\src\stm32f4xx_dma2d.c</FilePath>
             </File>
+            <File>
+              <FileName>misc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\stm32f429\driver\src\misc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -542,6 +567,11 @@
               <FileName>ffconf.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\src\fatfs\ffconf.h</FilePath>
+            </File>
+            <File>
+              <FileName>cli_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\cli\cli_config.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -927,6 +957,41 @@
               <FileName>unicode.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\fatfs\option\unicode.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>cli</GroupName>
+          <Files>
+            <File>
+              <FileName>cli.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\cli.c</FilePath>
+            </File>
+            <File>
+              <FileName>cli_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\cli_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>cli_readline.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\cli_readline.c</FilePath>
+            </File>
+            <File>
+              <FileName>cli_simple.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\cli_simple.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmds.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\cmds.c</FilePath>
+            </File>
+            <File>
+              <FileName>command.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\command.c</FilePath>
             </File>
           </Files>
         </Group>
