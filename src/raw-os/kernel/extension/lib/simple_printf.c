@@ -6,7 +6,7 @@
 static RAW_MUTEX mutex_printf_obj;
 
 
-
+#include "debug_uart.h"
 static inline void printchar(char **str, int c)
 {
 	if (str) 
@@ -16,7 +16,7 @@ static inline void printchar(char **str, int c)
 	}
 	else 
 	{ 
-		//user_put_char(c);
+		debug_putchar(c);
 	}
 }
 

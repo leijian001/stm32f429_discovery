@@ -12,8 +12,11 @@ static unsigned int port_memory_pool[PORT_MEMORY_SIZE / sizeof(unsigned int)] AT
 void port_memory_init(unsigned char prio)
 {
 	RAW_U32 ret;
+	
+	raw_printf("TLSF RAM init...\r\t\t\t\t");
 	ret = init_memory_pool(PORT_MEMORY_SIZE, port_memory_pool);
 	RAW_ASSERT((RAW_U32)-1 != ret);
+	raw_printf("[OK]\n");
 }
 
 void *port_malloc(unsigned int size)
@@ -35,7 +38,11 @@ void bsp_init(void)
 {
 	SystemCoreClockUpdate();
 	
-	// Ê¹ÄÜ GPIOG µÄÊ±ÖÓ
+	/* NVIC configuration */
+	/* Configure the Priority Group to 2 bits */
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	
+	// ä½¿èƒ½ GPIOG çš„æ—¶é’Ÿ
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB | RCC_AHB1Periph_GPIOC |
 							RCC_AHB1Periph_GPIOD | RCC_AHB1Periph_GPIOE | RCC_AHB1Periph_GPIOF |
 							RCC_AHB1Periph_GPIOG, ENABLE);

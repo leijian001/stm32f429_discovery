@@ -1,4 +1,4 @@
-﻿/**
+/**
   ******************************************************************************
   * @file    IAP/src/ymodem.c 
   * @author  MCD Application Team
@@ -28,9 +28,7 @@
 #include "ymodem.h"
 #include "raw_api.h"
 
-int debug_read(void *buff, int len);
-int debug_read_noblock(void *buf, int len, RAW_TICK_TYPE wait_opt);
-int debug_write(const void *buff, int len);
+#include "debug_uart.h"
 
 /*
 移植三个函数

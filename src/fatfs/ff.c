@@ -1826,7 +1826,9 @@ FRESULT create_name (
 			b = (BYTE)p[si++];			/* Get 2nd byte */
 			if (!IsDBCS2(b))
 				return FR_INVALID_NAME;	/* Reject invalid sequence */
+	#if _DF1S
 			w = (w << 8) + b;			/* Create a DBC */
+	#endif
 		}
 		w = ff_convert(w, 1);			/* Convert ANSI/OEM to Unicode */
 		if (!w) return FR_INVALID_NAME;	/* Reject invalid code */

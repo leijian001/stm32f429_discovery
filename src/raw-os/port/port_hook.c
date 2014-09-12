@@ -82,11 +82,12 @@ void task_create_hook(RAW_TASK_OBJ  *task_obj)
 	
 }
 
+#include "stm32f4xx.h"
 RAW_VOID raw_idle_coroutine_hook()
 {
 	for(;;)
 	{
-		
+
 	}
 }
 

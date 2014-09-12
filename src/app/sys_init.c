@@ -1,4 +1,4 @@
-﻿#include <raw_api.h>
+#include <raw_api.h>
 
 #include <bsp.h>
 
@@ -8,6 +8,8 @@ static PORT_STACK 				sys_init_task_stk[SYS_INIT_TASK_STK_SIZE];
 static RAW_TASK_OBJ 			sys_init_task_obj;
 /******************************************************************************/
 
+//#define MEMORY_TEST
+
 typedef void (*init_func_t)(RAW_U8 prio);
 typedef struct init_task_t
 {
@@ -16,28 +18,30 @@ typedef struct init_task_t
 }init_task_t;
 
 /******************************************************************************/
-
-void debug_serial_init(unsigned char prio);
-RAW_TASK_OBJ *get_shell_task_obj(void);
+#include "debug_uart.h"
 
 void sys_led_init(RAW_U8 prio);
+void fatfs_init(unsigned char prio);
 void lua_task_init(unsigned char prio);
 
 /******************************************************************************/
 
 static const init_task_t sys_init_arry[]  = 
 {
-	{debug_serial_init, 	CONFIG_RAW_PRIO_MAX - 10},		// 核心板串口
-	{port_memory_init, 		CONFIG_RAW_PRIO_MAX     },
-	{sys_led_init, 			CONFIG_RAW_PRIO_MAX - 3 },
-	{lua_task_init, 		CONFIG_RAW_PRIO_MAX - 5 },
+	{port_memory_init, 		CONFIG_RAW_PRIO_MAX     }, 		// 总堆栈
+	{sys_led_init, 			CONFIG_RAW_PRIO_MAX - 3 }, 		// 系统指示灯
+	{fatfs_init, 			CONFIG_RAW_PRIO_MAX 	}, 		// FatFS文件系统初始化
+	{lua_task_init, 		CONFIG_RAW_PRIO_MAX - 5 }, 		// 一个app
+	{shell_init, 			CONFIG_RAW_PRIO_MAX - 10},		// shell
 };
 
+#ifdef MEMORY_TEST
 static int memory_test(void)
 {
 	unsigned int *const sdram = SDRAM_BASE_ADDR;
 	unsigned int i=0;
 	
+	raw_printf("SDRAM test...\r\t\t\t\t");
 	for(i=0; i<SDRAM_SIZE/sizeof(unsigned int); i++)
 	{
 		sdram[i] = i;
@@ -49,8 +53,18 @@ static int memory_test(void)
 			break;
 	}
 	
-	return (i>=SDRAM_SIZE/sizeof(unsigned int))? 0 : -1;
+	if(i>=SDRAM_SIZE/sizeof(unsigned int))
+	{
+		raw_printf("[OK]\n");
+		return 0;
+	}
+	else
+	{
+		raw_printf("[Failed]\n");
+		return -1;
+	}
 }
+#endif
 
 static void sys_init_task(void *pdat)
 {
@@ -60,14 +74,16 @@ static void sys_init_task(void *pdat)
 	raw_sys_tick_init();   //第一个任务启动时开启系统tick定时器
 	
 	// debug_uart 初始化
-	sys_init_arry[0].init_task( sys_init_arry[0].prio );
+	debug_serial_init();
 	
 	raw_printf("\r\n-------------  raw-os  ----------------\r\n");
-	
+
+#ifdef MEMORY_TEST	
 	RAW_ASSERT( 0 == memory_test() );
+#endif
 	
-	// 任务初始化, 从1开始，跳过debug_uart
-	for(i=1; i<ARRAY_SIZE(sys_init_arry); i++)
+	// 任务初始化
+	for(i=0; i<ARRAY_SIZE(sys_init_arry); i++)
 	{
 		sys_init_arry[i].init_task( sys_init_arry[i].prio );
 	}

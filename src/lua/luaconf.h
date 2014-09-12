@@ -217,7 +217,7 @@
 #else
 int debug_write(const void *buf, int len);
 #define luai_writestring(s,l) 	debug_write((s), l)
-#define luai_writeline() 		debug_write("\r\n", 2)
+#define luai_writeline() 		debug_write("\n", 1)
 #endif
 #endif
 

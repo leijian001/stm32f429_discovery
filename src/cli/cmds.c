@@ -9,12 +9,17 @@
 
 #include "raw_api.h"
 
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+#include "lua_exlibs.h"
+#include "lua_fatfs.h"
+
 #include "bsp.h"
 #include "ff.h"
 #include "ymodem.h"
 
-extern int raw_printf(const char *format, ...);
-
+#pragma diag_suppress 870
 
 
 static int do_help(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
@@ -60,9 +65,22 @@ static int do_stack(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const ar
 	return 0;
 }
 
-/******************************************************************************/
+static int do_date(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+{
+	if(1 != argc)
+	{
+		return -1;
+	}
+	
+	char *w[] = {"日", "一", "二", "三", "四", "五", "六"};
+	
+	raw_printf("%4d年 %02d月 %02d日 星期%s %2d:%02d:%02d\n",
+		2014, 10, 1, w[3], 0, 0, 0);
+	
+	return 0;
+}
 
-#include "ymodem.h"
+/******************************************************************************/
 #define YMODEM_MAX_SIZE (10 * 1024)
 const char *fatfs_err2str(FRESULT fret);
 static int do_ry(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
@@ -104,6 +122,24 @@ static int do_ry(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[
 do_ry_end:
 	port_free(file_buf);
 	return 0;
+}
+
+static int do_rm(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+{
+	if(2 != argc)
+	{
+		return -1;
+	}
+	
+	FRESULT fret;
+	
+	fret = f_unlink(argv[1]);
+	if(FR_OK != fret)
+	{
+		raw_printf("%s\n", fatfs_err2str(fret));
+	}
+	
+	return 0;	
 }
 
 static int do_cat(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
@@ -148,7 +184,24 @@ static int do_cat(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv
 	return 0;
 }
 
-
+static int do_lua(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+{
+	if(2 != argc)
+	{
+		return -1;
+	}
+	
+	lua_State *L;
+	L = luaL_newstate();
+	RAW_ASSERT(NULL != L);
+	luaL_openlibs(L);
+	lua_openexlibs(L);	
+	
+	fatfs_dofile(L, argv[1]);
+	
+	lua_close(L);
+	return 0;
+}
 
 
 
@@ -158,42 +211,61 @@ static cmd_tbl_t __cmd_list[] =
 {
 	U_BOOT_CMD_MKENT
 	(
-		help,   CONFIG_SYS_MAXARGS, 0/* ���ظ� */,  do_help,
+		help,   CONFIG_SYS_MAXARGS, 0/* 不重复 */,  do_help,
 		"print command description/usage",
 		"\n"
-		"   - print brief description of all commands\n"
+		"    - print brief description of all commands\n"
 		"help command ...\n"
-		"   - print detailed usage of 'command'\n"
+		"    - print detailed usage of 'command'\n"
 	),
 	U_BOOT_CMD_MKENT
 	(
-		reboot, 1, 0/* ���ظ� */,  do_reboot,
+		reboot, 1, 0/* 不重复 */,  do_reboot,
 		"reboot the system",
 		"\n"
-		"   - reboot the system\n"
+		"    - reboot the system\n"
 	),
 	U_BOOT_CMD_MKENT
 	(
 		stack, 1, 1,  do_stack,
 		"print all task stack status",
 		"\n"
-		"   - print all task stack status\n"
+		"    - print all task stack status\n"
 	),
 	U_BOOT_CMD_MKENT
 	(
 		ry, 1, 0,  do_ry,
-		"Ymodem receive",
+		"receive file by Ymodem",
 		"\n"
-		"   - only support SOH"
-		"\n"
+		"    - only support SOH\n"
 	),
 	U_BOOT_CMD_MKENT
 	(
 		cat, 2, 0,  do_cat,
 		"print file",
 		"\n"
-		"   - only support SOH"
+		"    - cat filename\n"
+	),
+	U_BOOT_CMD_MKENT
+	(
+		rm, 2, 0,  do_rm,
+		"remove file",
 		"\n"
+		"    - rm filename\n"
+	),
+	U_BOOT_CMD_MKENT
+	(
+		date, 1, 1,  do_date,
+		"print date and time",
+		"\n"
+		"    - print date and time\n"
+	),
+	U_BOOT_CMD_MKENT
+	(
+		lua, 2, 1,  do_lua,
+		"run the lua script",
+		"\n"
+		"    - lua filename\n"
 	),
 };
 

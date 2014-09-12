@@ -36,12 +36,12 @@ void NMI_Handler(void)
   * @param  None
   * @retval None
   */
+#include "raw_api.h"
 void HardFault_Handler(void)
 {
-  /* Go to infinite loop when Hard Fault exception occurs */
-  while (1)
-  {
-  }
+	RAW_ASSERT(0);
+	/* Go to infinite loop when Hard Fault exception occurs */
+	while (1);
 }
 
 /**

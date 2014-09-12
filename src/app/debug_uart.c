@@ -2,35 +2,26 @@
 
 #include <raw_api.h>
 
+#include "bsp.h"
+
 #include "serial_fifo.h"
 #include "../cli/cli.h"
+#include "debug_uart.h"
 
 /******************************************************************************/
-#define DEBUG_SHELL_TASK_STK_SIZE 	512
-static  PORT_STACK 				debug_shell_task_stk[DEBUG_SHELL_TASK_STK_SIZE];
+#define DEBUG_SHELL_TASK_STK_SIZE 	(8*1024)
+static  PORT_STACK 				debug_shell_task_stk[DEBUG_SHELL_TASK_STK_SIZE] AT_SDRAM;
 static  RAW_TASK_OBJ 			debug_shell_task_obj;
 /******************************************************************************/
-
-#define DEBUG_UART 		USART1
-
-#define DEBUG_UART_CLK 			RCC_APB2Periph_USART1
-#define DEBUG_UART_CLK_INIT 	RCC_APB2PeriphClockCmd
-
-#define DEBUG_UART_IRQ 			USART1_IRQn
-#define DEBUG_UART_IRQ_HANDLER 	USART1_IRQHandler
-
-#define DEBUG_UART_AF 	GPIO_AF_USART1
-
-#define DEBUG_UART_TXE 			(1<<7)
-#define DEBUG_UART_RXNE 		(1<<5)
 
 static struct
 {
 	GPIO_TypeDef *port;
 	uint16_t pin;
+	unsigned char pinsrc;
 }
-DEBUG_UART_RX = {GPIOA, GPIO_Pin_10},
-DEBUG_UART_TX = {GPIOA, GPIO_Pin_9 };
+DEBUG_UART_RX = {GPIOA, GPIO_Pin_10, GPIO_PinSource10 },
+DEBUG_UART_TX = {GPIOA, GPIO_Pin_9 , GPIO_PinSource9  };
 
 
 /******************************************************************************/
@@ -42,7 +33,6 @@ DEFINE_FIFO(debug_rx, DEBUG_FIFO_DEPTH, DEBUG_FIFO_BLOCK_SIZE);
 RAW_MUTEX debug_tx_mutex;
 
 /******************************************************************************/
-
 
 
 static void debug_uart_init(unsigned int baud)
@@ -58,14 +48,15 @@ static void debug_uart_init(unsigned int baud)
 	DEBUG_UART_CLK_INIT(DEBUG_UART_CLK, ENABLE);
 
 	/* Connect USART pins to AF7 */
-	GPIO_PinAFConfig(DEBUG_UART_TX.port, DEBUG_UART_TX.pin, DEBUG_UART_AF);
-	GPIO_PinAFConfig(DEBUG_UART_RX.port, DEBUG_UART_RX.pin, DEBUG_UART_AF);
+	GPIO_PinAFConfig(DEBUG_UART_TX.port, DEBUG_UART_TX.pinsrc, DEBUG_UART_AF);
+	GPIO_PinAFConfig(DEBUG_UART_RX.port, DEBUG_UART_RX.pinsrc, DEBUG_UART_AF);
 
 	/* Configure USART Tx and Rx as alternate function push-pull */
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	
 	GPIO_InitStructure.GPIO_Pin = DEBUG_UART_TX.pin;
 	GPIO_Init(DEBUG_UART_TX.port, &GPIO_InitStructure);
 
@@ -89,17 +80,14 @@ static void debug_uart_init(unsigned int baud)
 	USART_InitStructure.USART_BaudRate = 115200;
 	USART_Init(DEBUG_UART, &USART_InitStructure);
 
-	/* NVIC configuration */
-	/* Configure the Priority Group to 2 bits */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-
 	/* Enable the USARTx Interrupt */
 	NVIC_InitStructure.NVIC_IRQChannel = DEBUG_UART_IRQ;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
+	USART_ITConfig(DEBUG_UART, USART_IT_RXNE, ENABLE);
 	/* Enable USART */
 	USART_Cmd(DEBUG_UART, ENABLE);
 }
@@ -187,11 +175,13 @@ int debug_cahce_empty(void)
 	return 0;
 }
 
+#if 0
 static inline void debug_putchar(unsigned char c)
 {
 	while( !(DEBUG_UART->SR & DEBUG_UART_TXE) );
 	DEBUG_UART->DR = c;
 }
+#endif
 
 void debug_putc(char c)
 {
@@ -240,12 +230,19 @@ RAW_TASK_OBJ *get_shell_task_obj(void)
 	return &debug_shell_task_obj;
 }
 
+void debug_serial_init(void)
+{
+	debug_uart_init(115200);
+	debug_fifo_init();
+}
+
 static void debug_shell_task(void *pdat)
 {	
 	(void)pdat;
-	debug_uart_init(115200);
-	debug_fifo_init();
+	
+	raw_printf("shell start...\r\t\t\t\t");
 	cli_init();
+	raw_printf("[OK]\n");
 	
 	raw_task_suspend(raw_task_identify());	// 任务挂起, 等待sys_init唤醒
 	for(;;)
@@ -254,7 +251,7 @@ static void debug_shell_task(void *pdat)
 	}
 }
 
-void debug_serial_init(unsigned char prio)
+void shell_init(unsigned char prio)
 {
 	raw_task_create(&debug_shell_task_obj, 				/* 任务控制块地址 	*/
 					(RAW_U8  *)"shell_daemon", 			/* 任务名 			*/

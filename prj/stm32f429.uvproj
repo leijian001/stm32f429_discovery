@@ -430,6 +430,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\app\lua_task.c</FilePath>
             </File>
+            <File>
+              <FileName>fatfs_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\app\fatfs_init.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -449,6 +454,11 @@
               <FileName>ymodem.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\lib\ymodem.c</FilePath>
+            </File>
+            <File>
+              <FileName>lua_exlibs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\lib\lua_exlibs.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -964,6 +974,11 @@
           <GroupName>cli</GroupName>
           <Files>
             <File>
+              <FileName>cmds.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\cli\cmds.c</FilePath>
+            </File>
+            <File>
               <FileName>cli.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\cli\cli.c</FilePath>
@@ -982,11 +997,6 @@
               <FileName>cli_simple.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\cli\cli_simple.c</FilePath>
-            </File>
-            <File>
-              <FileName>cmds.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\cli\cmds.c</FilePath>
             </File>
             <File>
               <FileName>command.c</FileName>

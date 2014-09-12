@@ -3,7 +3,7 @@
 
 #define SDRAM_BASE_ADDR 	((void *)0xD0000000)
 #define SDRAM_SIZE 			(64/8 *1024*1024)
-#define AT_SDRAM 	__attribute__((section("SDRAM")))
+#define AT_SDRAM 	__attribute__((section("SDRAM"),zero_init))
 
 #define PORT_MEMORY_SIZE 	(64 *1024)
 void port_memory_init(unsigned char prio);

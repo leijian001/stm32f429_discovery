@@ -9,11 +9,28 @@
 
 #include "diskio.h"		/* FatFs lower layer API */
 
+#include <string.h>
+#include "bsp.h"
 
 /* Definitions of physical drive number for each media */
 #define RAM		0
 #define USB		1
 
+#define RAM_DISK_SIZE 	(1*1024*1024)
+#define ram_disk 		((unsigned char *)__ram_disk)
+static unsigned int __ram_disk[RAM_DISK_SIZE / sizeof(unsigned int)] AT_SDRAM;
+
+static inline int ramdisk_read(unsigned char *buf, int sector, int count)
+{
+	memcpy(buf, ram_disk + sector*512, count*512);
+	return 0;
+}
+
+static inline int ramdisk_write(const unsigned char *buf, int sector, int count)
+{
+	memcpy(ram_disk + sector*512, buf, count*512);
+	return 0;
+}
 
 /*-----------------------------------------------------------------------*/
 /* Inidialize a Drive                                                    */
@@ -95,7 +112,7 @@ DRESULT disk_read (
 	switch (pdrv)
 	{
 	case RAM :
-
+		ramdisk_read(buff, sector, count);
 		res = RES_OK;
 		break;
 
@@ -131,7 +148,7 @@ DRESULT disk_write (
 	switch (pdrv)
 	{
 	case RAM :
-
+		ramdisk_write(buff, sector, count);
 		res = RES_OK;
 		break;
 
@@ -166,8 +183,23 @@ DRESULT disk_ioctl (
 	switch (pdrv)
 	{
 	case RAM :
-
-		res = RES_OK;
+		switch (cmd) 
+			{
+			case CTRL_SYNC:
+				res = RES_OK;
+				break;
+			case GET_SECTOR_COUNT:
+				*(DWORD*)buff = (RAM_DISK_SIZE/512); /*8M space*/
+				res = RES_OK;
+				break;
+			case GET_SECTOR_SIZE:
+				*(WORD*)buff = 512;
+				res = RES_OK;
+				break;
+			default:
+				res = RES_PARERR;
+				break;
+			}
 		break;
 
 	case USB :
