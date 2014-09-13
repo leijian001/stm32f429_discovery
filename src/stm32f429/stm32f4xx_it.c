@@ -39,6 +39,7 @@ void NMI_Handler(void)
 #include "raw_api.h"
 void HardFault_Handler(void)
 {
+	raw_printf("Hardfault\n");
 	RAW_ASSERT(0);
 	/* Go to infinite loop when Hard Fault exception occurs */
 	while (1);

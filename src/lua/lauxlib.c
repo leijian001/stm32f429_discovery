@@ -566,7 +566,6 @@ typedef struct LoadF {
 } LoadF;
 
 #ifndef NO_STD_FILE_OPERATION
-
 static const char *getF (lua_State *L, void *ud, size_t *size) {
   LoadF *lf = (LoadF *)ud;
   (void)L;  /* not used */
@@ -626,8 +625,9 @@ static int skipcomment (LoadF *lf, int *cp) {
   }
   else return 0;  /* no comment */
 }
+#endif
 
-
+#ifndef NO_STD_FILE_OPERATION
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
                                              const char *mode) {
   LoadF lf;
@@ -666,8 +666,9 @@ LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename,
 LUALIB_API int luaL_loadfilex (lua_State *L, const char *filename, const char *mode)
 {
 	return LUA_ERRFILE;
-}	
+}
 #endif
+
 
 typedef struct LoadS {
   const char *s;

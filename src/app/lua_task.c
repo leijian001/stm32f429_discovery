@@ -1,14 +1,16 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 
 #include <raw_api.h>
 
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+#include "lua_exlibs.h"
+
 
 /******************************************************************************/
-#define LUA_TASK_STK_SIZE 		(16 *1024)
-static PORT_STACK 				lua_task_stk[LUA_TASK_STK_SIZE];
+#define LUA_TASK_STK_SIZE 		(8 *1024)
+static PORT_STACK 				lua_task_stk[LUA_TASK_STK_SIZE] AT_SDRAM;
 static RAW_TASK_OBJ 			lua_task_obj;
 /******************************************************************************/
 
@@ -20,6 +22,9 @@ static void lua_task(void *pdat)
 	
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
+	lua_openexlibs(L);
+	
+	luaL_dostring(L, "print(\"Hello\")");
 	
 	for(;;)
 	{

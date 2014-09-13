@@ -156,13 +156,13 @@
 #define RAW_BYTE_FUNCTION_CHECK                                     1
 
 /*Set idle task task size, adjust as you need*/
-#define IDLE_STACK_SIZE                                             256
+#define IDLE_STACK_SIZE                                             512
 
 
 #if (CONFIG_RAW_TIMER > 0)
 
 /*set timer task stack size, adjust as you need*/
-#define TIMER_STACK_SIZE                                            256
+#define TIMER_STACK_SIZE                                            1024
 #define TIMER_TASK_PRIORITY                                         5
 
 #endif
@@ -170,7 +170,7 @@
 #if (CONFIG_RAW_TASK_0 > 0)
 
 /*task 0 stack size*/
-#define TASK_0_STACK_SIZE                                           256
+#define TASK_0_STACK_SIZE                                           1024
 
 /*Must be 2^n size!, such as 4, 8, 16,32, etc.......*/
 #define MAX_TASK_EVENT                                              32
@@ -184,7 +184,7 @@
 #endif
 
 #if (CONFIG_RAW_TICK_TASK > 0)
-#define TICK_TASK_STACK_SIZE                                        256
+#define TICK_TASK_STACK_SIZE                                        1024
 #define TICK_TASK_PRIORITY                                          1
 #endif
 
@@ -199,7 +199,7 @@
 #define RAW_CPU_INT_DIS_MEASURE_CHECK                               0
 #define RAW_CONFIG_CPU_TASK                                         0
 #define CPU_TASK_PRIORITY                                           (CONFIG_RAW_PRIO_MAX - 2)
-#define CPU_STACK_SIZE                                              256
+#define CPU_STACK_SIZE                                              512
 
 
 #if (CONFIG_RAW_PRIO_MAX >= 256)

@@ -1,11 +1,10 @@
-﻿#include <stm32f4xx.h>
+#include <stm32f4xx.h>
 
 #include <raw_api.h>
-#include <bsp.h>
 
 /******************************************************************************/
-#define SYS_LED_TASK_STK_SIZE 	128
-static PORT_STACK 				sys_led_task_stk[SYS_LED_TASK_STK_SIZE] AT_SDRAM;
+#define SYS_LED_TASK_STK_SIZE 	(768)
+static PORT_STACK 				sys_led_task_stk[SYS_LED_TASK_STK_SIZE];
 static RAW_TASK_OBJ 			sys_led_task_obj;
 /******************************************************************************/
 

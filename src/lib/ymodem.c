@@ -28,7 +28,9 @@
 #include "ymodem.h"
 #include "raw_api.h"
 
+#include "bsp.h"
 #include "debug_uart.h"
+#include "ff.h"
 
 /*
 移植三个函数
@@ -160,7 +162,7 @@ static int Receive_Packet (unsigned char *data, int *length, unsigned int timeou
   * @param  buf: Address of the first byte
   * @retval The size of the file
   */
-int Ymodem_Receive (char *file_name, unsigned char *buf, int buf_len)
+int ymodem_recv_to_buf(char *file_name, unsigned char *buf, int buf_len)
 {
 #if 0
 	unsigned char packet_data[PACKET_1K_SIZE + PACKET_OVERHEAD];
@@ -282,3 +284,154 @@ int Ymodem_Receive (char *file_name, unsigned char *buf, int buf_len)
 	return (int)size;
 }
 
+static void buf2file(const char *filename, void *file_buf, int file_size)
+{
+	FIL fp;
+	FRESULT fret;
+	unsigned int len;
+	char *str = file_buf;
+	fret = f_open(&fp, filename, FA_OPEN_ALWAYS|FA_WRITE);
+	if(FR_OK != fret)
+	{
+//		raw_printf("open file error\n");
+//		raw_printf("%s\n", fatfs_err2str(fret));
+		return;
+	}
+	fret = f_write(&fp, str, file_size, &len);
+	if(FR_OK != fret)
+	{
+//		raw_printf("write file error\n");
+//		raw_printf("%s\n", fatfs_err2str(fret));
+		f_close(&fp);
+		return;	
+	}
+//	raw_printf("write file OK\n");
+
+	f_close(&fp);
+}
+
+#define FREE(buf) 	do{ if(buf){ port_free(buf); buf=0; } }while(0)
+int ymodem_recv_to_fatfs(void)
+{
+#if 0
+	unsigned char packet_data[PACKET_1K_SIZE + PACKET_OVERHEAD];
+#else
+	unsigned char packet_data[PACKET_SIZE + PACKET_OVERHEAD];
+#endif
+	
+	unsigned char file_size[FILE_SIZE_LENGTH];
+	char file_name[FILE_NAME_LENGTH];
+	unsigned char *buf = 0;
+	
+	unsigned char *file_ptr, *buf_ptr;
+	int session_begin, session_done, errors, file_done;
+	int packets_received, packet_length, size = 0;
+	
+	int i;
+	for (session_done = 0, session_begin = 0, errors = 0; ! session_done; /* NULL */)
+	{		
+		for (packets_received = 0, file_done = 0; ! file_done; /* NULL */)
+		{
+			switch( Receive_Packet(packet_data, &packet_length, NAK_TIMEOUT) )
+			{
+			case 0:
+				errors = 0;
+				switch (packet_length)
+				{
+				/* Abort by sender */
+				case -1:
+					Send_Byte(ACK);
+					FREE(buf);
+					return 0;
+				/* End of transmission */
+				case 0:
+					Send_Byte(ACK);
+					buf2file(file_name, buf, size);
+					FREE(buf);
+					file_done = 1;
+					break;
+				/* Normal packet */
+				default:
+					if ((packet_data[PACKET_SEQNO_INDEX] & 0xff) != (packets_received & 0xff))//
+					{
+						Send_Byte(NAK);
+					}
+					else
+					{
+						if (packets_received == 0)
+						{	/* Filename packet */
+							if (packet_data[PACKET_HEADER] != 0)
+							{	/* Filename packet has valid data */
+								for (i = 0, file_ptr = packet_data + PACKET_HEADER; (*file_ptr != 0) && (i < FILE_NAME_LENGTH);)
+								{
+									file_name[i++] = *file_ptr++;
+								}
+								file_name[i++] = '\0';
+								for (i = 0, file_ptr ++; (*file_ptr != ' ') && (i < FILE_SIZE_LENGTH);)
+								{
+									file_size[i++] = *file_ptr++;
+								}
+								file_size[i++] = '\0';
+								size = atoi((char *)file_size);
+								buf = port_malloc(size);
+								/* Test the size of the image to be sent */
+								/* Image size is greater than Flash size */
+								//if (size > (buf_len - 1))
+								if( !buf )
+								{
+									/* End session */
+									Send_Byte(CA);
+									Send_Byte(CA);
+									return -1;
+								}
+								buf_ptr = buf;
+								Send_Byte(ACK);
+								Send_Byte(CRC16);
+							}
+							/* Filename packet is empty, end session */
+							else
+							{
+								Send_Byte(ACK);
+								file_done = 1;
+								session_done = 1;
+								break;
+							}
+						}
+						/* Data packet */
+						else
+						{
+							ymemcpy(buf_ptr, packet_data + PACKET_HEADER, packet_length);
+							buf_ptr += packet_length;
+							Send_Byte(ACK);
+						}
+						packets_received ++;
+						session_begin = 1;
+					}
+				}
+				break;
+			case 1:
+				Send_Byte(CA);
+				Send_Byte(CA);
+				FREE(buf);
+				return -3;
+			default:
+				if (session_begin > 0)
+				{
+					errors ++;
+				}
+				if (errors > MAX_ERRORS)
+				{
+					Send_Byte(CA);
+					Send_Byte(CA);
+					FREE(buf);
+					return 0;
+				}
+				Send_Byte(CRC16);
+				break;
+			}
+		}
+	}
+
+	FREE(buf);
+	return (int)size;
+}

@@ -84,11 +84,12 @@
 #include <raw_api.h>
 #include <mm/raw_tlsf.h>
 
+/*#define USE_SBRK        (0) */
+/*#define USE_MMAP        (0) */
+
 #ifndef NULL
 #define NULL 	((void *)0)
 #endif
-/*#define USE_SBRK        (0) */
-/*#define USE_MMAP        (0) */
 
 #ifndef USE_PRINTF
 #define USE_PRINTF      (1)
@@ -156,7 +157,7 @@
 #endif
 
 #ifdef USE_PRINTF
-extern int raw_printf(const char *f, ...);
+//extern void vc_port_printf(char*   f,   ...);
 
 #define PRINT_MSG  raw_printf
 #define ERROR_MSG  raw_printf
@@ -916,7 +917,7 @@ void *realloc_ex(void *ptr, RAW_U32 new_size, void *mem_pool)
     }
 
 	ptr_aux = malloc_ex(new_size, mem_pool);
-    if ( !ptr_aux ){
+    if (! ptr_aux){
         return NULL;
     }      
     
@@ -939,7 +940,7 @@ void *calloc_ex(RAW_U32 nelem, RAW_U32 elem_size, void *mem_pool)
         return NULL;
 
 	ptr = malloc_ex(nelem * elem_size, mem_pool);
-    if ( !ptr )
+    if (! ptr)
         return NULL;
     raw_memset(ptr, 0, nelem * elem_size);
 

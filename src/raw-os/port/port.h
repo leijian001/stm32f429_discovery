@@ -38,11 +38,12 @@ void raw_start_first_task(void);
 
 void raw_sys_tick_init(void);
 
-extern void raw_printk(const char *p_fmt, ...);
+//extern void raw_printk(const char *p_fmt, ...);
+#define raw_printk raw_printf
 
-//#define  RAW_ASSERT(CON)        if (!(CON)) {volatile RAW_U8 dummy = 0; raw_printk("file is %s, line is %d\n",__FILE__, __LINE__);raw_printk("aborted task is %s\n", raw_task_active->task_name); while (dummy==0);}
+#define  RAW_ASSERT(CON)        if (!(CON)) {volatile RAW_U8 dummy = 0; raw_printk("file is %s, line is %d\n",__FILE__, __LINE__);raw_printk("aborted task is %s\n", raw_task_active->task_name); while (dummy==0);}
 
-#define  RAW_ASSERT(CON)        if (!(CON)) {volatile RAW_U8 dummy = 0; while (dummy == 0);}
+//#define  RAW_ASSERT(CON)        if (!(CON)) {volatile RAW_U8 dummy = 0; while (dummy == 0);}
 
 
 #define  CONTEXT_SWITCH()    	port_task_switch();          

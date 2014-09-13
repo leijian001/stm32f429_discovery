@@ -334,7 +334,7 @@ static int readable (const char *filename) {
   return 1;
 }
 #else
-static int readable (const char *filename)
+static int readable (const char *filename) 
 {
 	return 0;
 }

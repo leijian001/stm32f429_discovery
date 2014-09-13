@@ -23,7 +23,7 @@ RAW_VOID  *port_stack_init(PORT_STACK  *p_stk_base, RAW_U32 stk_size,  RAW_VOID 
 	
 	#if USE_FPU
 	
-	*(--stk)    = (RAW_U32)0xaa;                  /* R? : argument                                      */ 
+	*(--stk)  = (RAW_U32)0xaa;                  /* R? : argument                                      */ 
 	*(--stk)  = (RAW_U32)0xa;                   /* FPSCR : argument                                      */
 	*(--stk)  = (RAW_U32)0x15;                   /* S15 : argument                                               */        
 	*(--stk)  = (RAW_U32)0x14;                   /* S14 : argument                                      */

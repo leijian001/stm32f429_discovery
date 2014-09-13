@@ -9,7 +9,7 @@
 #include "debug_uart.h"
 
 /******************************************************************************/
-#define DEBUG_SHELL_TASK_STK_SIZE 	(8*1024)
+#define DEBUG_SHELL_TASK_STK_SIZE 	(8 *1024)
 static  PORT_STACK 				debug_shell_task_stk[DEBUG_SHELL_TASK_STK_SIZE] AT_SDRAM;
 static  RAW_TASK_OBJ 			debug_shell_task_obj;
 /******************************************************************************/
@@ -236,12 +236,22 @@ void debug_serial_init(void)
 	debug_fifo_init();
 }
 
+
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+#include "lua_exlibs.h"
+extern lua_State *cmdL;
 static void debug_shell_task(void *pdat)
 {	
 	(void)pdat;
 	
 	raw_printf("shell start...\r\t\t\t\t");
 	cli_init();
+	cmdL = luaL_newstate();
+	RAW_ASSERT(NULL != cmdL);
+	luaL_openlibs(cmdL);
+	lua_openexlibs(cmdL);
 	raw_printf("[OK]\n");
 	
 	raw_task_suspend(raw_task_identify());	// 任务挂起, 等待sys_init唤醒

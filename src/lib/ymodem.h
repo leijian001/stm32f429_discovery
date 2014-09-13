@@ -1,4 +1,4 @@
-﻿/**
+/**
   ******************************************************************************
   * @file    IAP/inc/ymodem.h 
   * @author  MCD Application Team
@@ -38,7 +38,7 @@
 #define PACKET_SIZE             (128)
 #define PACKET_1K_SIZE          (1024)
 
-#define FILE_NAME_LENGTH        (256)
+#define FILE_NAME_LENGTH        (64)
 #define FILE_SIZE_LENGTH        (16)
 
 #define SOH                     (0x01)  /* start of 128-byte data packet */
@@ -56,7 +56,8 @@
 #define MAX_ERRORS              (5)
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-int Ymodem_Receive (char *file_name, unsigned char *buf, int len);
+int ymodem_recv_to_buf(char *file_name, unsigned char *buf, int buf_len);
+int ymodem_recv_to_fatfs(void);
 
 #endif  /* _YMODEM_H_ */
 

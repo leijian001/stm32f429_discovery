@@ -364,7 +364,7 @@ int raw_printf(const char *fmt, ...);
 ** space (and to reserve some numbers for pseudo-indices).
 */
 #if LUAI_BITSINT >= 32
-#define LUAI_MAXSTACK		(64 *1024)
+#define LUAI_MAXSTACK		(32 *1024)
 #else
 #define LUAI_MAXSTACK		15000
 #endif

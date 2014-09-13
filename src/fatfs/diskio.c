@@ -45,7 +45,6 @@ DSTATUS disk_initialize (
 	switch (pdrv)
 	{
 	case RAM :
-
 		state = 0;
 		break;
 

@@ -81,10 +81,18 @@ static int do_date(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const arg
 }
 
 /******************************************************************************/
+
+#if 0
 #define YMODEM_MAX_SIZE (10 * 1024)
 const char *fatfs_err2str(FRESULT fret);
+#endif
 static int do_ry(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
+#if 1
+	ymodem_recv_to_fatfs();
+	
+	return 0;
+#else
 	char filename[FILE_NAME_LENGTH];
 	unsigned char *file_buf = port_malloc(YMODEM_MAX_SIZE);
 	int file_size;
@@ -122,6 +130,7 @@ static int do_ry(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[
 do_ry_end:
 	port_free(file_buf);
 	return 0;
+#endif
 }
 
 static int do_rm(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
@@ -184,6 +193,7 @@ static int do_cat(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv
 	return 0;
 }
 
+lua_State *cmdL = 0;
 static int do_lua(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
 	if(2 != argc)
@@ -191,18 +201,23 @@ static int do_lua(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv
 		return -1;
 	}
 	
-	lua_State *L;
-	L = luaL_newstate();
-	RAW_ASSERT(NULL != L);
-	luaL_openlibs(L);
-	lua_openexlibs(L);	
+	RAW_ASSERT(NULL != cmdL);
+	fatfs_dofile(cmdL, argv[1]);
 	
-	fatfs_dofile(L, argv[1]);
-	
-	lua_close(L);
 	return 0;
 }
+static int do_lua_dostring(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+{
+	if(2 != argc)
+	{
+		return -1;
+	}
 
+	RAW_ASSERT(NULL != cmdL);
+	luaL_dostring(cmdL, argv[1]);
+	
+	return 0;
+}
 
 
 
@@ -266,6 +281,13 @@ static cmd_tbl_t __cmd_list[] =
 		"run the lua script",
 		"\n"
 		"    - lua filename\n"
+	),
+	U_BOOT_CMD_MKENT
+	(
+		lua_dostring, 2, 1,  do_lua_dostring,
+		"run the lua string",
+		"\n"
+		"    - lua string\n"
 	),
 };
 
