@@ -373,7 +373,7 @@ int ymodem_recv_to_fatfs(void)
 								}
 								file_size[i++] = '\0';
 								size = atoi((char *)file_size);
-								buf = port_malloc(size);
+								buf = port_malloc( (size+127) & ~127);
 								/* Test the size of the image to be sent */
 								/* Image size is greater than Flash size */
 								//if (size > (buf_len - 1))

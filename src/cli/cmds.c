@@ -38,28 +38,24 @@ static int do_reboot(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const a
 
 static int do_stack(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
-	LIST *iter, *head;
+	LIST *iter, *head, *temp;
 	RAW_TASK_OBJ *task_ptr;
 	
 	RAW_U32 free_stack;
 	RAW_U32 inx = 0;
-	RAW_SR_ALLOC();
 	
 	head = &raw_task_debug.task_head;
 	iter = head->next;
 	
-	for(iter = head->next; iter != head; iter = iter->next) 
+	for(iter = head->next; iter != head; iter = temp, inx++) 
 	{
+		temp = iter->next;
 		task_ptr = raw_list_entry(iter, RAW_TASK_OBJ, task_debug_list);
 		
-		RAW_CPU_DISABLE();
-		free_stack = (unsigned int)( (PORT_STACK *)(task_ptr->task_stack) - task_ptr->task_stack_base );
-		RAW_CPU_ENABLE();
+		raw_task_stack_check(task_ptr, &free_stack);
 		
 		raw_printf("%04d name = %s\r\t\t\t\tstack_size = %4d\tfree_stack = %4d\n", 
 					inx, task_ptr->task_name, task_ptr->stack_size, free_stack);
-		
-		inx++;
 	}
 	
 	return 0;

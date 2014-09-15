@@ -499,7 +499,7 @@ RAW_INLINE bhdr_t *process_area(void *area, RAW_U32 size)
 /******************** Begin of the allocator code *****************/
 /******************************************************************/
 
-static char *mp = NULL;         /* Default memory pool. */
+static void * mp = NULL;         /* Default memory pool. */
 
 /******************************************************************/
 RAW_U32 init_memory_pool(RAW_U32 mem_pool_size, void *mem_pool)
@@ -688,7 +688,7 @@ void *tlsf_malloc(RAW_U32 size)
     ret = malloc_ex(size, mp);
 
     TLSF_RELEASE_LOCK(&((tlsf_t *)mp)->lock);
-
+	
     return ret;
 }
 
