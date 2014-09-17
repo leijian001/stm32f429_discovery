@@ -17,6 +17,7 @@
 
 #include "bsp.h"
 #include "ff.h"
+#include "diskio.h"
 #include "ymodem.h"
 
 #pragma diag_suppress 870
@@ -189,6 +190,27 @@ static int do_cat(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv
 	return 0;
 }
 
+static int do_ls(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
+{
+	char *p;
+	
+	switch( argc )
+	{
+	case 1:
+		p = "0:";
+		break;
+	case 2:
+		p = argv[1];
+		break;
+	default:
+		return -1;
+	}
+	
+	scan_files(p);
+	
+	return 0;
+}
+
 lua_State *cmdL = 0;
 static int do_lua(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const argv[])
 {
@@ -249,6 +271,13 @@ static cmd_tbl_t __cmd_list[] =
 		"receive file by Ymodem",
 		"\n"
 		"    - only support SOH\n"
+	),
+	U_BOOT_CMD_MKENT
+	(
+		ls, 2, 0,  do_ls,
+		"scan file",
+		"\n"
+		"    - la path\n"
 	),
 	U_BOOT_CMD_MKENT
 	(

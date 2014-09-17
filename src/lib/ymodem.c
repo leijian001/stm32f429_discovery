@@ -54,6 +54,9 @@ void UARTySendBytes(uint8_t* SendData,uint16_t len)
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
+#define BLOCK_SIZE 	256
+#define MEM_ALIGN 	((BLOCK_SIZE) - 1)
+#define ROUNDUP(r) 	( ((r) + MEM_ALIGN) & ~MEM_ALIGN )
 /* Private variables ---------------------------------------------------------*/
 
 
@@ -373,7 +376,7 @@ int ymodem_recv_to_fatfs(void)
 								}
 								file_size[i++] = '\0';
 								size = atoi((char *)file_size);
-								buf = port_malloc( (size+127) & ~127);
+								buf = port_malloc( ROUNDUP( size ) );
 								/* Test the size of the image to be sent */
 								/* Image size is greater than Flash size */
 								//if (size > (buf_len - 1))
