@@ -393,22 +393,31 @@ int raw_printf(const char *fmt, ...);
 ** ===================================================================
 */
 
-#define LUA_NUMBER_DOUBLE
+//#define LUA_NUMBER_DOUBLE
+#define LUA_NUMBER_FLOAT
 
-#ifdef LUA_NUMBER_DOUBLE
+#if defined(LUA_NUMBER_DOUBLE) && defined(LUA_NUMBER_FLOAT)
+#error "can not define LUA_NUMBER_DOUBLE and LUA_NUMBER_FLOAT at same time"
+#endif
+
+#if   defined(LUA_NUMBER_DOUBLE)
 	#define LUA_NUMBER	double
-#else
+#elif defined(LUA_NUMBER_FLOAT) 
 	#define LUA_NUMBER	float
+#else
+	#define LUA_NUMBER 	signed long
 #endif
 
 /*
 @@ LUAI_UACNUMBER is the result of an 'usual argument conversion'
 @* over a number.
 */
-#ifdef LUA_NUMBER_DOUBLE
+#if   defined(LUA_NUMBER_DOUBLE)
 	#define LUAI_UACNUMBER	double
-#else
+#elif defined(LUA_NUMBER_FLOAT)
 	#define LUAI_UACNUMBER	float
+#else
+	#define LUAI_UACNUMBER	unsigned long
 #endif
 
 /*
@@ -417,14 +426,19 @@ int raw_printf(const char *fmt, ...);
 @@ lua_number2str converts a number to a string.
 @@ LUAI_MAXNUMBER2STR is maximum size of previous conversion.
 */
-#ifdef LUA_NUMBER_DOUBLE
+#if   defined(LUA_NUMBER_DOUBLE)
 	#define LUA_NUMBER_SCAN		"%lf"
 	#define LUA_NUMBER_FMT		"%.14g"
 	#define lua_number2str(s,n)	sprintf((s), LUA_NUMBER_FMT, (n))
 	#define LUAI_MAXNUMBER2STR	32 /* 16 digits, sign, point, and \0 */
-#else
+#elif defined(LUA_NUMBER_FLOAT)
 	#define LUA_NUMBER_SCAN		"%f"
 	#define LUA_NUMBER_FMT		"%.7g"
+	#define lua_number2str(s,n)	sprintf((s), LUA_NUMBER_FMT, (n))
+	#define LUAI_MAXNUMBER2STR	32 /* 16 digits, sign, point, and \0 */
+#else
+	#define LUA_NUMBER_SCAN		"%ld"
+	#define LUA_NUMBER_FMT		"%14ld"
 	#define lua_number2str(s,n)	sprintf((s), LUA_NUMBER_FMT, (n))
 	#define LUAI_MAXNUMBER2STR	32 /* 16 digits, sign, point, and \0 */
 #endif
@@ -432,10 +446,12 @@ int raw_printf(const char *fmt, ...);
 /*
 @@ l_mathop allows the addition of an 'l' or 'f' to all math operations
 */
-#ifdef LUA_NUMBER_DOUBLE
+#if   defined(LUA_NUMBER_DOUBLE)
 	#define l_mathop(x)		(x)
-#else
+#elif defined(LUA_NUMBER_FLOAT)
 	#define l_mathop(x)		(x##f)
+#else
+	#define l_mathop(x)		(x)
 #endif
 
 /*
@@ -446,17 +462,21 @@ int raw_printf(const char *fmt, ...);
 ** systems, you can leave 'lua_strx2number' undefined and Lua will
 ** provide its own implementation.
 */
-#ifdef LUA_NUMBER_DOUBLE
+#if   defined(LUA_NUMBER_DOUBLE)
 	#define lua_str2number(s,p)	strtod((s), (p))
-#else
+#elif defined(LUA_NUMBER_FLOAT)
 	#define lua_str2number(s,p)	strtof((s), (p))
+#else
+	#define lua_str2number(s,p)	strtol((s), (p))
 #endif
 
 #if defined(LUA_USE_STRTODHEX)
-	#ifdef LUA_NUMBER_DOUBLE
+	#if   defined(LUA_NUMBER_DOUBLE)
 		#define lua_strx2number(s,p)	strtod((s), (p))
-	#else
+	#elif defined(LUA_NUMBER_FLOAT)
 		#define lua_strx2number(s,p)	strtof((s), (p))
+	#else
+		#define lua_strx2number(s,p)	strtol((s), (p))
 	#endif
 #endif
 
@@ -467,13 +487,17 @@ int raw_printf(const char *fmt, ...);
 
 /* the following operations need the math library */
 #if defined(lobject_c) || defined(lvm_c)
-	#ifdef LUA_NUMBER_DOUBLE
+	#if   defined(LUA_NUMBER_DOUBLE)
+		#include <math.h>
+		#define luai_nummod(L,a,b)	((a) - l_mathop(floor)((a)/(b))*(b))
+		#define luai_numpow(L,a,b)	(l_mathop(pow)(a,b))
+	#elif defined(LUA_NUMBER_FLOAT)
 		#include <math.h>
 		#define luai_nummod(L,a,b)	((a) - l_mathop(floor)((a)/(b))*(b))
 		#define luai_numpow(L,a,b)	(l_mathop(pow)(a,b))
 	#else
 		#include <math.h>
-		#define luai_nummod(L,a,b)	((a) - l_mathop(floor)((a)/(b))*(b))
+		#define luai_nummod(L,a,b)	((a) % (b))
 		#define luai_numpow(L,a,b)	(l_mathop(pow)(a,b))
 	#endif
 #endif
@@ -505,8 +529,6 @@ int raw_printf(const char *fmt, ...);
 ** It must have at least 32 bits.
 */
 #define LUA_UNSIGNED	unsigned LUA_INT32
-
-
 
 /*
 ** Some tricks with doubles

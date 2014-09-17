@@ -3,7 +3,7 @@
 #include <bsp.h>
 
 /******************************************************************************/
-#define SYS_INIT_TASK_STK_SIZE 	(1024)
+#define SYS_INIT_TASK_STK_SIZE 	(512)
 static PORT_STACK 				sys_init_task_stk[SYS_INIT_TASK_STK_SIZE];
 static RAW_TASK_OBJ 			sys_init_task_obj;
 /******************************************************************************/

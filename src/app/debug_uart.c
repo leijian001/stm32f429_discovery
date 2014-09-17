@@ -255,6 +255,7 @@ static void debug_shell_task(void *pdat)
 	raw_printf("[OK]\n");
 	
 	raw_task_suspend(raw_task_identify());	// 任务挂起, 等待sys_init唤醒
+
 	for(;;)
 	{
 		cli_loop();

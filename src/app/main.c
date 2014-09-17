@@ -1,4 +1,4 @@
-﻿#include <raw_api.h>
+#include <raw_api.h>
 
 void bsp_init(void);
 void create_init_task(void);
