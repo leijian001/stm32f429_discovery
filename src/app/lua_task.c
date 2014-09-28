@@ -27,17 +27,7 @@ static void lua_task(void *pdat)
 	luaL_dostring(L, "print(\"Hello\")");
 	
 	for(;;)
-	{
-		LCD_Clear(0xFFFF);
-		LCD_SetLayer(LCD_FOREGROUND_LAYER);
-		LCD_DrawCircle(100, 100, 50);
-		
-		unsigned short *const frame = lcd_get_frame_base();
-		for(int i=0; i<1000; i++)
-		{
-			frame[i] = LCD_COLOR_RED;
-		}
-		
+	{	
 		raw_task_suspend(raw_task_identify());
 	}
 }

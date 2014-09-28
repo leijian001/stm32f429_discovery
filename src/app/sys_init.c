@@ -23,16 +23,18 @@ typedef struct init_task_t
 void sys_led_init(RAW_U8 prio);
 void fatfs_init(unsigned char prio);
 void lua_task_init(unsigned char prio);
+void gui_init(RAW_U8 prio);
 
 /******************************************************************************/
 
 static const init_task_t sys_init_arry[]  = 
 {
-	{port_memory_init, 		CONFIG_RAW_PRIO_MAX     }, 		// 总堆栈
-	{sys_led_init, 			CONFIG_RAW_PRIO_MAX - 3 }, 		// 系统指示灯
-	{fatfs_init, 			CONFIG_RAW_PRIO_MAX 	}, 		// FatFS文件系统初始化
-	{lua_task_init, 		CONFIG_RAW_PRIO_MAX - 5 }, 		// 一个app
-	{shell_init, 			CONFIG_RAW_PRIO_MAX - 10},		// shell
+	{port_memory_init, 		CONFIG_RAW_PRIO_MAX      }, 		// 总堆栈
+	{sys_led_init, 			CONFIG_RAW_PRIO_MAX - 4  }, 		// 系统指示灯
+	{fatfs_init, 			CONFIG_RAW_PRIO_MAX 	 }, 		// FatFS文件系统初始化
+	{lua_task_init, 		CONFIG_RAW_PRIO_MAX - 10 }, 		// 一个app
+	{shell_init, 			CONFIG_RAW_PRIO_MAX - 20 },		// shell
+	{gui_init, 				CONFIG_RAW_PRIO_MAX - 3  },
 };
 
 #ifdef MEMORY_TEST

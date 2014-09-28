@@ -364,7 +364,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\src\app;..\src\cmsis\inc;..\src\raw-os\kernel\include;..\src\raw-os\port;..\src\stm32f429;..\src\stm32f429\driver\inc;..\src\raw-os\kernel\extension\include;..\src\bsp;..\src\lua;..\src\fatfs;..\src\lib</IncludePath>
+              <IncludePath>..\src\app;..\src\cmsis\inc;..\src\raw-os\kernel\include;..\src\raw-os\port;..\src\stm32f429;..\src\stm32f429\driver\inc;..\src\raw-os\kernel\extension\include;..\src\bsp;..\src\lua;..\src\fatfs;..\src\lib;..\src\emWin;..\src\emWin\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -436,6 +436,16 @@
               <FileName>fatfs_init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\app\fatfs_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>gui_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\app\gui_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>WindowDLG.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\app\WindowDLG.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1004,6 +1014,41 @@
               <FileName>command.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\cli\command.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>emWin</GroupName>
+          <Files>
+            <File>
+              <FileName>GUIConf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\emWin\GUIConf.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUIConf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\emWin\GUIConf.h</FilePath>
+            </File>
+            <File>
+              <FileName>GUIDRV_stm32f429i_discovery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\emWin\GUIDRV_stm32f429i_discovery.c</FilePath>
+            </File>
+            <File>
+              <FileName>LCDConf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\src\emWin\LCDConf.h</FilePath>
+            </File>
+            <File>
+              <FileName>GUI_X_RawOS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\emWin\GUI_X_RawOS.c</FilePath>
+            </File>
+            <File>
+              <FileName>STemWin522_4x9i_CM4_OS_Keil.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\src\emWin\STemWin522_4x9i_CM4_OS_Keil.lib</FilePath>
             </File>
           </Files>
         </Group>

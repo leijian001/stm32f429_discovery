@@ -54,8 +54,11 @@ typedef LUAI_USER_ALIGNMENT_T L_Umaxalign;
 
 
 /* result of a `usual argument conversion' over lua_Number */
+#ifdef LUA_NUMBER_FLOAT
+typedef double l_uacNumber;
+#else
 typedef LUAI_UACNUMBER l_uacNumber;
-
+#endif
 
 /* internal assertions for in-house debugging */
 #if defined(lua_assert)
