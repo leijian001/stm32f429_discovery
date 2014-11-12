@@ -69,7 +69,7 @@ static int do_date(struct cmd_tbl_s *cmdtp, int flag, int argc, char * const arg
 		return -1;
 	}
 	
-	char *w[] = {"日", "一", "二", "三", "四", "五", "六"};
+	char *w[] = {"日 \b", "一 \b", "二 \b", "三 \b", "四 \b", "五 \b", "六 \b"};
 	
 	raw_printf("%4d年 %02d月 %02d日 星期%s %2d:%02d:%02d\n",
 		2014, 10, 1, w[3], 0, 0, 0);
